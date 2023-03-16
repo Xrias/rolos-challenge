@@ -17,9 +17,9 @@ export function getPaginationNumbers(countOfPages:number, currentPageNumber:numb
     let secondPart:number[] = []
     let thirdPart:number[] = []
 
-    const isCurrentPageInTheMiddle = start > 3 && countOfPages - end > 3
-    const isCurrentPageNearFromEnd = countOfPages - end <= 3
-    const isCurrentPageNearFromStart = start <= 3
+    const isCurrentPageInTheMiddle = start > VISIBLE_BORDER + 1 && countOfPages - end > VISIBLE_BORDER + 1
+    const isCurrentPageNearFromEnd = countOfPages - end <= VISIBLE_BORDER + 1
+    const isCurrentPageNearFromStart = start <= VISIBLE_BORDER + 1
 
     if (isCurrentPageInTheMiddle) {
         return {
