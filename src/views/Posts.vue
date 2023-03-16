@@ -1,49 +1,39 @@
-<script lang="ts" setup>
-  import { getPosts, Post } from '@/api/api';
-  import { onBeforeMount, ref } from 'vue';
+<script lang="ts">
+  import Pagination from '@/components/Pagination.vue';
+  import PostsList from '@/components/PostsList.vue';
+  import { mapMutations, mapState } from 'vuex'
 
-  const posts = ref<Post[]>();
-
-  onBeforeMount(() => loadPosts());
-
-  async function loadPosts() {
-    posts.value = (await getPosts()).posts;
+  export default {
+    components: {
+      Pagination,
+      PostsList
+    },
+    methods: {
+      ...mapMutations({
+        setCurrentPageNumber: 'post/setCurrentPageNumber'
+      })
+    },
+    computed: {
+      ...mapState({
+        error: state => state.post.error,
+        posts: state => state.post.posts,
+        currentPageNumber: state => state.post.currentPageNumber,
+        countOfPages: state => state.post.countOfPages
+      })
+    }
   }
 </script>
 
 <template>
   <h1>Posts list</h1>
-  <RouterLink
-    class="post"
-    v-for="(post, index) of posts"
-    :to="{ name: 'post', params: { postId: post.id } }"
-    :key="index"
-  >
-    <div class="post__id">#{{ post.id }}</div>
-    <div class="post__title">{{ post.title }}</div>
-    <div>{{ post.body }}</div>
-  </RouterLink>
+  <Pagination 
+    v-if="!error && posts.length > 0"
+    :set-current-page-number="setCurrentPageNumber"
+    :current-page-number="currentPageNumber"
+    :count-of-pages="countOfPages"
+  />
+  <PostsList
+    v-if="!error"
+  />
+  <div v-else>{{ error }}</div>
 </template>
-
-<style scoped>
-  .post {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    grid-template-rows: repeat(2, auto);
-    gap: 8px;
-
-    & + & {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #ccc;
-    }
-
-    &__id {
-      grid-row: -1/1;
-    }
-
-    &__title {
-      font-weight: 700;
-    }
-  }
-</style>
